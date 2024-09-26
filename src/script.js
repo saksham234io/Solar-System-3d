@@ -9,15 +9,16 @@ const cubeTextureLoader = new THREE.CubeTextureLoader()
 cubeTextureLoader.setPath('/textures/cubeMap/')
 
 
-const sunTexture = textureLoader.load("/textures/2k_sun.jpg");
-const mercuryTexture = textureLoader.load("/textures/2k_mercury.jpg");
-const venusTexture = textureLoader.load("/textures/2k_venus_surface.jpg");
-const earthTexture = textureLoader.load("/textures/2k_earth_daymap.jpg");
-const marsTexture = textureLoader.load("/textures/2k_mars.jpg");
-const moonTexture = textureLoader.load("/textures/2k_moon.jpg");
-const jupiterTexture = textureLoader.load("/textures/2k_jupiter.jpg");
-const uranusTexture = textureLoader.load("/textures/2k_uranus.jpg");
+const sunTexture = textureLoader.load("./textures/2k_sun.jpg");
+const mercuryTexture = textureLoader.load("./textures/2k_mercury.jpg");
+const venusTexture = textureLoader.load("./textures/2k_venus_surface.jpg");
+const earthTexture = textureLoader.load("./textures/2k_earth_daymap.jpg");
+const marsTexture = textureLoader.load("./textures/2k_mars.jpg");
+const moonTexture = textureLoader.load("./textures/2k_moon.jpg");
+const jupiterTexture = textureLoader.load("./textures/2k_jupiter.jpg");
+const uranusTexture = textureLoader.load("./textures/2k_uranus.jpg");
 
+cubeTextureLoader.setPath('./textures/cubeMap/');
 const backgroundCubemap = cubeTextureLoader
   .load([
     'px.png',
@@ -29,6 +30,7 @@ const backgroundCubemap = cubeTextureLoader
   ]);
 
 scene.background = backgroundCubemap
+
 
 
 const mercuryMaterial = new THREE.MeshStandardMaterial({
