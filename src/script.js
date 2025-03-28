@@ -7,7 +7,6 @@ const textureLoader = new THREE.TextureLoader();
 const cubeTextureLoader = new THREE.CubeTextureLoader();
 cubeTextureLoader.setPath("/textures/cubeMap/");
 
-
 const sunTexture = textureLoader.load("./textures/2k_sun.jpg");
 const mercuryTexture = textureLoader.load("./textures/2k_mercury.jpg");
 const venusTexture = textureLoader.load("./textures/2k_venus_surface.jpg");
@@ -25,7 +24,6 @@ const backgroundCubemap = cubeTextureLoader.load([
 scene.background = backgroundCubemap;
 
 const createMaterial = (texture) => new THREE.MeshStandardMaterial({ map: texture });
-
 
 const materials = {
   sun: new THREE.MeshBasicMaterial({ map: sunTexture }),
@@ -46,12 +44,74 @@ scene.add(sun);
 
 // Define planet
 const planets = [
-  { name: "Mercury", radius: 0.5, distance: 10, speed: 0.01, material: materials.mercury, moons: [] },
-  { name: "Venus", radius: 0.8, distance: 15, speed: 0.007, material: materials.venus, moons: [] },
-  { name: "Earth", radius: 1, distance: 20, speed: 0.005, material: materials.earth, moons: [{ name: "Moon", radius: 0.3, distance: 3, speed: 0.015 }] },
-  { name: "Mars", radius: 0.7, distance: 25, speed: 0.003, material: materials.mars, moons: [{ name: "Phobos", radius: 0.1, distance: 2, speed: 0.02 }, { name: "Deimos", radius: 0.2, distance: 3, speed: 0.015 }] },
-  { name: "Jupiter", radius: 1.7, distance: 55, speed: 0.01, material: materials.jupiter, moons: [] },
-  { name: "Uranus", radius: 1.2, distance: 75, speed: 0.012, material: materials.uranus, moons: [] },
+  {
+    name: "Mercury",
+    radius: 0.5,
+    distance: 10,
+    speed: 0.01,
+    material: materials.mercury,
+    moons: []
+  },
+  {
+    name: "Venus",
+    radius: 0.8,
+    distance: 15,
+    speed: 0.007,
+    material: materials.venus,
+    moons: []
+  },
+  {
+    name: "Earth",
+    radius: 1,
+    distance: 20,
+    speed: 0.005,
+    material: materials.earth,
+    moons: [
+      {
+        name: "Moon",
+        radius: 0.3,
+        distance: 3,
+        speed: 0.015
+      }
+    ]
+  },
+  {
+    name: "Mars",
+    radius: 0.7,
+    distance: 25,
+    speed: 0.003,
+    material: materials.mars,
+    moons: [
+      {
+        name: "Phobos",
+        radius: 0.1,
+        distance: 2,
+        speed: 0.02
+      },
+      {
+        name: "Deimos",
+        radius: 0.2,
+        distance: 3,
+        speed: 0.015
+      }
+    ]
+  },
+  {
+    name: "Jupiter",
+    radius: 1.7,
+    distance: 55,
+    speed: 0.01,
+    material: materials.jupiter,
+    moons: []
+  },
+  {
+    name: "Uranus",
+    radius: 1.2,
+    distance: 75,
+    speed: 0.012,
+    material: materials.uranus,
+    moons: []
+  }
 ];
 
 const createSphere = (radius, material) => {
@@ -60,7 +120,7 @@ const createSphere = (radius, material) => {
   return mesh;
 };
 
-// planets and moons 
+// planets and add moons 
 const planetMeshes = planets.map((planet) => {
   const planetMesh = createSphere(planet.radius, planet.material);
   planetMesh.position.x = planet.distance;
@@ -125,7 +185,7 @@ const renderLoop = () => {
       planet.rotation.y += planets[index].speed;
       planet.position.x = Math.sin(planet.rotation.y) * planets[index].distance;
       planet.position.z = Math.cos(planet.rotation.y) * planets[index].distance;
-
+      
       // Update moons
       planet.children.forEach((moon) => {
         moon.userData.angle += moon.userData.speed;
@@ -134,7 +194,6 @@ const renderLoop = () => {
       });
     });
   }
-
   controls.update();
   renderer.render(scene, camera);
   requestAnimationFrame(renderLoop);
