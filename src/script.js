@@ -7,6 +7,7 @@ const textureLoader = new THREE.TextureLoader();
 const cubeTextureLoader = new THREE.CubeTextureLoader();
 cubeTextureLoader.setPath("/textures/cubeMap/");
 
+
 const sunTexture = textureLoader.load("./textures/2k_sun.jpg");
 const mercuryTexture = textureLoader.load("./textures/2k_mercury.jpg");
 const venusTexture = textureLoader.load("./textures/2k_venus_surface.jpg");
@@ -24,6 +25,7 @@ const backgroundCubemap = cubeTextureLoader.load([
 scene.background = backgroundCubemap;
 
 const createMaterial = (texture) => new THREE.MeshStandardMaterial({ map: texture });
+
 
 const materials = {
   sun: new THREE.MeshBasicMaterial({ map: sunTexture }),
@@ -127,7 +129,7 @@ const planetMeshes = planets.map((planet) => {
   scene.add(planetMesh);
   planet.moons.forEach((moon) => {
     const moonMesh = createSphere(moon.radius, materials.moon);
-    moonMesh.userData = { distance: moon.distance, speed: moon.speed, angle: 0 };
+    moonMesh.position.x = moon.distance;
     planetMesh.add(moonMesh);
   });
   return planetMesh;
@@ -148,6 +150,7 @@ const canvas = document.querySelector("canvas.threejs");
 const renderer = new THREE.WebGLRenderer({ canvas, antialias: true });
 renderer.setSize(window.innerWidth, window.innerHeight);
 renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+
 
 const controls = new OrbitControls(camera, canvas);
 controls.enableDamping = true;
@@ -178,22 +181,39 @@ window.addEventListener("resize", () => {
   renderer.setSize(window.innerWidth, window.innerHeight);
 });
 
-// Animation loop
+// Raycaster for object selection
+const raycaster = new THREE.Raycaster();
+const mouse = new THREE.Vector2();
+let selectedObject = null;
+
+window.addEventListener("click", (event) => {
+  mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
+  mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
+  raycaster.setFromCamera(mouse, camera);
+
+  const intersects = raycaster.intersectObjects([sun, ...planetMeshes]);
+  if (intersects.length > 0) {
+    selectedObject = intersects[0].object;
+    controls.target.copy(selectedObject.position);
+    //  auto zoom  planet problem
+    // camera.position.set(selectedObject.position.x + 5, selectedObject.position.y + 3, selectedObject.position.z + 10);
+  }
+});
+
+
 const renderLoop = () => {
   if (animationRunning) {
     planetMeshes.forEach((planet, index) => {
       planet.rotation.y += planets[index].speed;
       planet.position.x = Math.sin(planet.rotation.y) * planets[index].distance;
       planet.position.z = Math.cos(planet.rotation.y) * planets[index].distance;
-      
-      // Update moons
-      planet.children.forEach((moon) => {
-        moon.userData.angle += moon.userData.speed;
-        moon.position.x = Math.sin(moon.userData.angle) * moon.userData.distance;
-        moon.position.z = Math.cos(moon.userData.angle) * moon.userData.distance;
-      });
     });
   }
+
+  if (selectedObject) {
+    controls.target.copy(selectedObject.position);
+  }
+
   controls.update();
   renderer.render(scene, camera);
   requestAnimationFrame(renderLoop);
